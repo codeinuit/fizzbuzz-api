@@ -24,14 +24,28 @@ type FizzBuzz struct {
 	quit chan os.Signal
 }
 
-func setupRouter() *gin.Engine {
+func setupRouter() (fb *FizzBuzz) {
+	l := logrus.NewLogrusLogger()
 	_, isDebug := os.LookupEnv("DEBUG")
 	if !isDebug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	r := gin.New()
-	return r
+
+	fb = &FizzBuzz{
+		engine: r,
+		quit:   make(chan os.Signal),
+		log:    l,
+	}
+
+	h := handlers{
+		log: l,
+	}
+
+	r.GET("/health", h.healthcheck)
+
+	return fb
 }
 
 func (fb *FizzBuzz) Run(port string) {
@@ -62,19 +76,7 @@ func (fb FizzBuzz) Stop() {
 }
 
 func main() {
-	l := logrus.NewLogrusLogger()
-
-	fb := FizzBuzz{
-		engine: setupRouter(),
-		quit:   make(chan os.Signal),
-		log:    l,
-	}
-
-	h := handlers{
-		log: l,
-	}
-
-	fb.engine.GET("/health", h.healthcheck)
+	fb := setupRouter()
 
 	signal.Notify(fb.quit, syscall.SIGINT, syscall.SIGTERM)
 	go fb.Run(os.Getenv("PORT"))
