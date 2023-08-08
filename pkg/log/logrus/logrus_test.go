@@ -7,8 +7,6 @@ import (
 )
 
 func TestLogrusImplementation(t *testing.T) {
-	var logr logger.Logger
+	var logr logger.Logger = logrus.NewLogrusLogger()
 	_ = logr
-
-	logr = logrus.NewLogrusLogger()
 }
