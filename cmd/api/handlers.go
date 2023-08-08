@@ -41,7 +41,7 @@ func (h handlers) fizzbuzz(c *gin.Context) {
 
 	fb, err := fizzbuzz.FizzBuzz(v.Int1, v.Int2, v.Int3, v.String1, v.String2)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

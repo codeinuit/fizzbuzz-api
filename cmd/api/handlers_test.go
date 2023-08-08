@@ -101,5 +101,5 @@ func TestGetFizzBuzzWrongParameter(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/fizzbuzz", &b)
 	fb.engine.ServeHTTP(w, req)
 
-	assert.Equal(t, 500, w.Code)
+	assert.Equal(t, 400, w.Code)
 }
