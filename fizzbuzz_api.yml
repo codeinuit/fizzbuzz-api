@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: FizzBuzz API
+  description: Simple FizzBuzz API in Golang
+  version: 0.1.9
+servers:
+  - url: http://localhost:8080
+    description: Local development
+paths:
+  /health:
+    get:
+      summary: Returns a health status.
+      description: Returns a 200 status when the API is up
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: "OK"
+  /fizzbuzz:
+    get:
+      summary: Generate a FizzBuzz response
+      description: Generate a custom FizzBuzz response depending of the input
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: string
+                example: "1,2,fizz,4,buzz,fizz,7,8,fizz,buzz,11,fizz,13,14,fizzbuzz,16."
+        '400':
+          description: Wrong or missing parameter
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "limit must be a positive integer at least supperior or equal to 1"
