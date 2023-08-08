@@ -1,6 +1,12 @@
 package logrus
 
-import "github.com/sirupsen/logrus"
+import (
+	"os"
+
+	"github.com/sirupsen/logrus"
+)
+
+const LOG_LEVEL string = "LOG_LEVEL"
 
 type LogrusLogger struct {
 	logger *logrus.Logger
@@ -10,9 +16,23 @@ type LogrusLogger struct {
 // logger implementation
 func NewLogrusLogger() *LogrusLogger {
 	logger := logrus.New()
+
+	lvl := os.Getenv(LOG_LEVEL)
+	lvlParsed, err := logrus.ParseLevel(lvl)
+	if err != nil {
+		logger.WithError(err).Error("could not parse log level, defaulting to Info")
+		lvlParsed = logrus.InfoLevel
+	}
+	logger.SetLevel(lvlParsed)
+
 	return &LogrusLogger{
 		logger: logger,
 	}
+}
+
+// Debug prints logs at warn level
+func (l LogrusLogger) Debug(v ...any) {
+	l.logger.Debug(v...)
 }
 
 // Info prints logs at info level
