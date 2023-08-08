@@ -54,7 +54,7 @@ func TestGetFizzBuzzOK(t *testing.T) {
 	var want string = "1,2,fizz"
 
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, want, string(w.Body.Bytes()))
+	assert.Equal(t, want, w.Body.String())
 }
 
 func TestGetFizzBuzzMissingParameter(t *testing.T) {
