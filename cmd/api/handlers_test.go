@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,4 +28,78 @@ func TestGetHealth(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, want, got)
+}
+
+func TestGetFizzBuzzOK(t *testing.T) {
+	fb := setupRouter()
+
+	data := getFizzBuzzBody{
+		Int1:    3,
+		Int2:    5,
+		Int3:    3,
+		String1: "fizz",
+		String2: "buzz",
+	}
+	var b bytes.Buffer
+
+	err := json.NewEncoder(&b).Encode(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/fizzbuzz", &b)
+	fb.engine.ServeHTTP(w, req)
+
+	var want string = "1,2,fizz"
+
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, want, w.Body.String())
+}
+
+func TestGetFizzBuzzMissingParameter(t *testing.T) {
+	fb := setupRouter()
+
+	data := getFizzBuzzBody{
+		Int1:    3,
+		Int2:    5,
+		String1: "fizz",
+		String2: "buzz",
+	}
+	var b bytes.Buffer
+
+	err := json.NewEncoder(&b).Encode(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/fizzbuzz", &b)
+	fb.engine.ServeHTTP(w, req)
+
+	assert.Equal(t, 400, w.Code)
+}
+
+func TestGetFizzBuzzWrongParameter(t *testing.T) {
+	fb := setupRouter()
+
+	data := getFizzBuzzBody{
+		Int1:    3,
+		Int2:    5,
+		Int3:    -23,
+		String1: "fizz",
+		String2: "buzz",
+	}
+	var b bytes.Buffer
+
+	err := json.NewEncoder(&b).Encode(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/fizzbuzz", &b)
+	fb.engine.ServeHTTP(w, req)
+
+	assert.Equal(t, 500, w.Code)
 }

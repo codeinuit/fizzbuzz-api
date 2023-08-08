@@ -1,8 +1,6 @@
 package main
 
 import (
-	logger "codeinuit/fizzbuzz-api/pkg/log"
-	"codeinuit/fizzbuzz-api/pkg/log/logrus"
 	"context"
 	"fmt"
 	"log"
@@ -11,6 +9,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	logger "github.com/codeinuit/fizzbuzz-api/pkg/log"
+	"github.com/codeinuit/fizzbuzz-api/pkg/log/logrus"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,6 +45,7 @@ func setupRouter() (fb *FizzBuzz) {
 	}
 
 	r.GET("/health", h.healthcheck)
+	r.GET("/fizzbuzz", h.fizzbuzz)
 
 	return fb
 }

@@ -1,8 +1,9 @@
 package fizzbuzz_test
 
 import (
-	"codeinuit/fizzbuzz-api/pkg/fizzbuzz"
 	"testing"
+
+	"github.com/codeinuit/fizzbuzz-api/pkg/fizzbuzz"
 
 	"github.com/stretchr/testify/assert"
 )
