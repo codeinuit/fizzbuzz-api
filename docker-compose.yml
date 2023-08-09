@@ -6,6 +6,7 @@ services:
       - db
     build: ./
     environment:
+      - PORT=8080
       - MYSQL_HOST=database
       - MYSQL_PORT=3306
       - MYSQL_USER=user

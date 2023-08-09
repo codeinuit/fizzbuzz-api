@@ -1,20 +1,18 @@
 package models
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
-type FizzBuzzRequestStat struct {
+type Stats struct {
 	gorm.Model
 
 	// request informations
-	Int1    int
-	Int2    int
-	Int3    int
+	Int1    uint8
+	Int2    uint8
+	Int3    uint8
 	String1 string
 	String2 string
 
-	Time time.Time
+	Use uint8
 }

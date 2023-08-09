@@ -36,7 +36,7 @@ func InitDatabase() (*Database, error) {
 		return &Database{}, err
 	}
 
-	err = db.AutoMigrate(models.FizzBuzzRequestStat{})
+	err = db.AutoMigrate(&models.Stats{})
 	if err != nil {
 		return &Database{}, err
 	}
@@ -44,4 +44,48 @@ func InitDatabase() (*Database, error) {
 	return &Database{
 		db: db,
 	}, err
+}
+
+func (db *Database) Count(i any) int64 {
+	var res int64
+
+	_ = db.db.Where(i).Count(&res)
+	return res
+}
+
+func (db *Database) CountUsage() (models.Stats, error) {
+	var result []models.Stats
+
+	db.db.Model(&models.Stats{}).Find(&result)
+
+	var mostUsed models.Stats
+	for _, stat := range result {
+		if stat.Use > mostUsed.Use {
+			mostUsed = stat
+		}
+	}
+
+	return mostUsed, nil
+}
+
+func (db *Database) UsageUpdate(m models.Stats) {
+	db.db.Transaction(func(tx *gorm.DB) error {
+		var result models.Stats
+
+		err := tx.Where(m).Take(&result).Error
+		if err != nil && err != gorm.ErrRecordNotFound {
+			fmt.Println(err.Error())
+			return err
+		} else if err == gorm.ErrRecordNotFound {
+			fmt.Println("creating entry")
+			m.Use = 1
+			err = tx.Create(&m).Error
+			return err
+		}
+
+		fmt.Println("updating", result.Use)
+		err = tx.Model(&result).Update("use", result.Use+1).Error
+		return err
+
+	})
 }

@@ -32,6 +32,12 @@ func setupRouter() (fb *FizzBuzz) {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	db, err := InitDatabase()
+	if err != nil {
+		l.Error(err.Error())
+		return
+	}
+
 	r := gin.New()
 
 	fb = &FizzBuzz{
@@ -42,10 +48,12 @@ func setupRouter() (fb *FizzBuzz) {
 
 	h := handlers{
 		log: l,
+		db:  db,
 	}
 
 	r.GET("/health", h.healthcheck)
 	r.GET("/fizzbuzz", h.fizzbuzz)
+	r.GET("/stats", h.stats)
 
 	return fb
 }
@@ -79,13 +87,6 @@ func (fb FizzBuzz) Stop() {
 
 func main() {
 	fb := setupRouter()
-	db, err := InitDatabase()
-	if err != nil {
-		fb.log.Error(err.Error())
-		return
-	}
-
-	_ = db
 
 	signal.Notify(fb.quit, syscall.SIGINT, syscall.SIGTERM)
 	go fb.Run(os.Getenv("PORT"))
