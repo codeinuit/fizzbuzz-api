@@ -79,6 +79,13 @@ func (fb FizzBuzz) Stop() {
 
 func main() {
 	fb := setupRouter()
+	db, err := InitDatabase()
+	if err != nil {
+		fb.log.Error(err.Error())
+		return
+	}
+
+	_ = db
 
 	signal.Notify(fb.quit, syscall.SIGINT, syscall.SIGTERM)
 	go fb.Run(os.Getenv("PORT"))
