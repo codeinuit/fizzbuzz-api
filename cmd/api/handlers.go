@@ -48,13 +48,16 @@ func (h handlers) fizzbuzz(c *gin.Context) {
 		return
 	}
 
-	h.db.UsageUpdate(models.Stats{
+	err = h.db.UsageUpdate(models.Stats{
 		Int1:    v.Int1,
 		Int2:    v.Int2,
 		Int3:    v.Int3,
 		String1: v.String1,
 		String2: v.String2,
 	})
+	if err != nil {
+		h.log.Warn("could not count usage for route /fizzbuzz: ", err.Error())
+	}
 
 	c.String(http.StatusOK, fb)
 }

@@ -61,8 +61,8 @@ func (db *MySQLDatabase) CountUsage() (models.Stats, error) {
 	return mostUsed, err
 }
 
-func (db *MySQLDatabase) UsageUpdate(m models.Stats) {
-	db.db.Transaction(func(tx *gorm.DB) error {
+func (db *MySQLDatabase) UsageUpdate(m models.Stats) error {
+	return db.db.Transaction(func(tx *gorm.DB) error {
 		var result models.Stats
 
 		err := tx.Where(m).Take(&result).Error

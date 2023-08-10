@@ -23,7 +23,7 @@ func (db DatabaseMock) CountUsage() (models.Stats, error) {
 	return awaited, nil
 }
 
-func (db *DatabaseMock) UsageUpdate(m models.Stats) {
+func (db *DatabaseMock) UsageUpdate(m models.Stats) error {
 	db.awaited = models.Stats{
 		Int1:    m.Int1,
 		Int2:    m.Int2,
@@ -32,4 +32,6 @@ func (db *DatabaseMock) UsageUpdate(m models.Stats) {
 		String2: m.String2,
 		Use:     m.Use + 1,
 	}
+
+	return nil
 }

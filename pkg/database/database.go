@@ -6,5 +6,5 @@ import "github.com/codeinuit/fizzbuzz-api/pkg/models"
 // for database operations
 type Database interface {
 	CountUsage() (models.Stats, error)
-	UsageUpdate(m models.Stats)
+	UsageUpdate(m models.Stats) error
 }

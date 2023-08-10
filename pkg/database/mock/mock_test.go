@@ -8,7 +8,6 @@ import (
 )
 
 func TestMockImplementation(t *testing.T) {
-	var db database.Database
-	db = mock.NewDatabaseMock()
+	var db database.Database = mock.NewDatabaseMock()
 	_ = db
 }
