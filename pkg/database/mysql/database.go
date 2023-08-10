@@ -17,11 +17,11 @@ const (
 	MYSQL_PORT = "MYSQL_PORT"
 )
 
-type Database struct {
+type MySQLDatabase struct {
 	db *gorm.DB
 }
 
-func InitDatabase() (*Database, error) {
+func InitDatabase() (*MySQLDatabase, error) {
 	dbHost := os.Getenv(MYSQL_HOST)
 	dbDatabase := os.Getenv(MYSQL_DB)
 	dbUser := os.Getenv(MYSQL_USER)
@@ -32,20 +32,20 @@ func InitDatabase() (*Database, error) {
 
 	db, err := gorm.Open(mysql.Open(str), &gorm.Config{})
 	if err != nil {
-		return &Database{}, err
+		return &MySQLDatabase{}, err
 	}
 
 	err = db.AutoMigrate(&models.Stats{})
 	if err != nil {
-		return &Database{}, err
+		return &MySQLDatabase{}, err
 	}
 
-	return &Database{
+	return &MySQLDatabase{
 		db: db,
 	}, err
 }
 
-func (db *Database) CountUsage() (models.Stats, error) {
+func (db *MySQLDatabase) CountUsage() (models.Stats, error) {
 	var result []models.Stats
 
 	err := db.db.Model(&models.Stats{}).Find(&result).Error
@@ -61,7 +61,7 @@ func (db *Database) CountUsage() (models.Stats, error) {
 	return mostUsed, err
 }
 
-func (db *Database) UsageUpdate(m models.Stats) {
+func (db *MySQLDatabase) UsageUpdate(m models.Stats) {
 	db.db.Transaction(func(tx *gorm.DB) error {
 		var result models.Stats
 

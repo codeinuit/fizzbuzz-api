@@ -26,6 +26,28 @@ paths:
     get:
       summary: Generate a FizzBuzz response
       description: Generate a custom FizzBuzz response depending of the input
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          schema: 
+            type: object
+            properties:
+              int1:
+                type: integer
+                exemple: 3
+              int2:
+                type: integer
+                exemple: 5
+              int3:
+                type: integer
+                exemple: 16
+              string1:
+                type: string
+                exemple: fizz
+              string2:
+                type: string
+                exemple: buzz
       responses:
         '200':
           description: OK
@@ -44,3 +66,43 @@ paths:
                   error:
                     type: string
                     example: "limit must be a positive integer at least supperior or equal to 1"
+  /stats:
+    get:
+      summary: Returns the most used FizzBuzz request
+      description: Returns the most used FizzBuzz request with request and usage details
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  int1:
+                    type: integer
+                    exemple: 3
+                  int2:
+                    type: integer
+                    exemple: 5
+                  int3:
+                    type: integer
+                    exemple: 16
+                  string1:
+                    type: string
+                    exemple: fizz
+                  string2:
+                    type: string
+                    exemple: buzz
+                  use:
+                    type: integer
+                    exemple: 3
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "internal server error"
