@@ -3,14 +3,18 @@ package main
 import (
 	"net/http"
 
+	"github.com/codeinuit/fizzbuzz-api/pkg/database"
 	"github.com/codeinuit/fizzbuzz-api/pkg/fizzbuzz"
 	logger "github.com/codeinuit/fizzbuzz-api/pkg/log"
+	"github.com/codeinuit/fizzbuzz-api/pkg/models"
 
 	"github.com/gin-gonic/gin"
 )
 
+// handlers is the main struct for handling endpoints
 type handlers struct {
 	log logger.Logger
+	db  database.Database
 }
 
 // getFizzBuzzBody represent the input structure for
@@ -45,5 +49,30 @@ func (h handlers) fizzbuzz(c *gin.Context) {
 		return
 	}
 
+	err = h.db.UsageUpdate(models.Stats{
+		Int1:    v.Int1,
+		Int2:    v.Int2,
+		Int3:    v.Int3,
+		String1: v.String1,
+		String2: v.String2,
+	})
+	if err != nil {
+		h.log.Warn("could not count usage for route /fizzbuzz: ", err.Error())
+	}
+
 	c.String(http.StatusOK, fb)
+}
+
+// stats return the fizzbuzz stats
+// GET /stats
+func (h handlers) stats(c *gin.Context) {
+	res, err := h.db.CountUsage()
+
+	if err != nil {
+		h.log.Error(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"int1": res.Int1, "int2": res.Int2, "int3": res.Int3, "string1": res.String1, "string2": res.String2, "used": res.Use})
 }
