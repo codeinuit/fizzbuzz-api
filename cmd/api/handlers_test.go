@@ -8,12 +8,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/codeinuit/fizzbuzz-api/pkg/database/mock"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetHealth(t *testing.T) {
-	fb := setupRouter()
+	fb, err := setupRouter()
+	assert.Nil(t, err)
+	initRoutes(fb, mock.NewDatabaseMock())
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/health", nil)
@@ -21,7 +24,7 @@ func TestGetHealth(t *testing.T) {
 
 	var want gin.H = gin.H{"message": "OK"}
 	var got gin.H
-	err := json.Unmarshal(w.Body.Bytes(), &got)
+	err = json.Unmarshal(w.Body.Bytes(), &got)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +34,9 @@ func TestGetHealth(t *testing.T) {
 }
 
 func TestGetFizzBuzzOK(t *testing.T) {
-	fb := setupRouter()
+	fb, err := setupRouter()
+	assert.Nil(t, err)
+	initRoutes(fb, mock.NewDatabaseMock())
 
 	data := getFizzBuzzBody{
 		Int1:    3,
@@ -42,7 +47,7 @@ func TestGetFizzBuzzOK(t *testing.T) {
 	}
 	var b bytes.Buffer
 
-	err := json.NewEncoder(&b).Encode(data)
+	err = json.NewEncoder(&b).Encode(data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,7 +63,9 @@ func TestGetFizzBuzzOK(t *testing.T) {
 }
 
 func TestGetFizzBuzzMissingParameter(t *testing.T) {
-	fb := setupRouter()
+	fb, err := setupRouter()
+	assert.Nil(t, err)
+	initRoutes(fb, mock.NewDatabaseMock())
 
 	data := getFizzBuzzBody{
 		Int1:    3,
@@ -68,7 +75,7 @@ func TestGetFizzBuzzMissingParameter(t *testing.T) {
 	}
 	var b bytes.Buffer
 
-	err := json.NewEncoder(&b).Encode(data)
+	err = json.NewEncoder(&b).Encode(data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,7 +88,9 @@ func TestGetFizzBuzzMissingParameter(t *testing.T) {
 }
 
 func TestGetFizzBuzzWrongParameter(t *testing.T) {
-	fb := setupRouter()
+	fb, err := setupRouter()
+	assert.Nil(t, err)
+	initRoutes(fb, mock.NewDatabaseMock())
 
 	data := getFizzBuzzBody{
 		Int1:    3,
@@ -92,7 +101,7 @@ func TestGetFizzBuzzWrongParameter(t *testing.T) {
 	}
 	var b bytes.Buffer
 
-	err := json.NewEncoder(&b).Encode(data)
+	err = json.NewEncoder(&b).Encode(data)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/codeinuit/fizzbuzz-api/pkg/database"
 	"github.com/codeinuit/fizzbuzz-api/pkg/fizzbuzz"
 	logger "github.com/codeinuit/fizzbuzz-api/pkg/log"
 	"github.com/codeinuit/fizzbuzz-api/pkg/models"
@@ -12,7 +13,7 @@ import (
 
 type handlers struct {
 	log logger.Logger
-	db  *Database
+	db  database.Database
 }
 
 // getFizzBuzzBody represent the input structure for
@@ -48,9 +49,9 @@ func (h handlers) fizzbuzz(c *gin.Context) {
 	}
 
 	h.db.UsageUpdate(models.Stats{
-		Int1:    uint8(v.Int1),
-		Int2:    uint8(v.Int2),
-		Int3:    uint8(v.Int3),
+		Int1:    v.Int1,
+		Int2:    v.Int2,
+		Int3:    v.Int3,
 		String1: v.String1,
 		String2: v.String2,
 	})
@@ -62,6 +63,7 @@ func (h handlers) fizzbuzz(c *gin.Context) {
 // GET /stats
 func (h handlers) stats(c *gin.Context) {
 	res, err := h.db.CountUsage()
+
 	if err != nil {
 		h.log.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})

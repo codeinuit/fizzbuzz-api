@@ -8,11 +8,11 @@ type Stats struct {
 	gorm.Model
 
 	// request informations
-	Int1    uint8
-	Int2    uint8
-	Int3    uint8
+	Int1    int
+	Int2    int
+	Int3    int
 	String1 string
 	String2 string
 
-	Use uint8
+	Use int
 }

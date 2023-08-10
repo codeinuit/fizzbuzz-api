@@ -1,4 +1,4 @@
-package main
+package mysql
 
 import (
 	"fmt"
@@ -29,7 +29,6 @@ func InitDatabase() (*Database, error) {
 	dbPort := os.Getenv(MYSQL_PORT)
 
 	str := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbPort, dbDatabase)
-	fmt.Println(str)
 
 	db, err := gorm.Open(mysql.Open(str), &gorm.Config{})
 	if err != nil {
@@ -46,18 +45,12 @@ func InitDatabase() (*Database, error) {
 	}, err
 }
 
-func (db *Database) Count(i any) int64 {
-	var res int64
-
-	_ = db.db.Where(i).Count(&res)
-	return res
-}
-
 func (db *Database) CountUsage() (models.Stats, error) {
 	var result []models.Stats
 
-	db.db.Model(&models.Stats{}).Find(&result)
+	err := db.db.Model(&models.Stats{}).Find(&result).Error
 
+	// @TODO: use max() instead
 	var mostUsed models.Stats
 	for _, stat := range result {
 		if stat.Use > mostUsed.Use {
@@ -65,7 +58,7 @@ func (db *Database) CountUsage() (models.Stats, error) {
 		}
 	}
 
-	return mostUsed, nil
+	return mostUsed, err
 }
 
 func (db *Database) UsageUpdate(m models.Stats) {
@@ -77,15 +70,12 @@ func (db *Database) UsageUpdate(m models.Stats) {
 			fmt.Println(err.Error())
 			return err
 		} else if err == gorm.ErrRecordNotFound {
-			fmt.Println("creating entry")
 			m.Use = 1
 			err = tx.Create(&m).Error
 			return err
 		}
 
-		fmt.Println("updating", result.Use)
 		err = tx.Model(&result).Update("use", result.Use+1).Error
 		return err
-
 	})
 }
