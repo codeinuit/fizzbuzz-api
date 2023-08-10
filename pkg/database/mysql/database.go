@@ -21,6 +21,7 @@ type MySQLDatabase struct {
 	db *gorm.DB
 }
 
+// InitDatabase is used to return the MySQL database instance
 func InitDatabase() (*MySQLDatabase, error) {
 	dbHost := os.Getenv(MYSQL_HOST)
 	dbDatabase := os.Getenv(MYSQL_DB)
@@ -45,12 +46,15 @@ func InitDatabase() (*MySQLDatabase, error) {
 	}, err
 }
 
+// CountUsage is used to return the number of usages of FizzBuzz from the DB
 func (db *MySQLDatabase) CountUsage() (models.Stats, error) {
 	var result []models.Stats
 
 	err := db.db.Model(&models.Stats{}).Find(&result).Error
 
 	// @TODO: use max() instead
+	// reason of the comment : encountered a library bug with the driver
+	// getting every entries is usually a bad practice
 	var mostUsed models.Stats
 	for _, stat := range result {
 		if stat.Use > mostUsed.Use {
@@ -61,6 +65,8 @@ func (db *MySQLDatabase) CountUsage() (models.Stats, error) {
 	return mostUsed, err
 }
 
+// UsageUpdate is used to increment the number of usages for FizzBuzz endpoint
+// to the database
 func (db *MySQLDatabase) UsageUpdate(m models.Stats) error {
 	return db.db.Transaction(func(tx *gorm.DB) error {
 		var result models.Stats

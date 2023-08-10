@@ -18,6 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// FizzBuzz represents the main structure
 type FizzBuzz struct {
 	engine *gin.Engine
 	srv    *http.Server
@@ -27,6 +28,7 @@ type FizzBuzz struct {
 	quit chan os.Signal
 }
 
+// setupRouter init the main structure and the http router as well
 func setupRouter() (fb *FizzBuzz, err error) {
 	l := logrus.NewLogrusLogger()
 	_, isDebug := os.LookupEnv("DEBUG")
@@ -44,6 +46,8 @@ func setupRouter() (fb *FizzBuzz, err error) {
 	return fb, nil
 }
 
+// Run will run main program along the http server.
+// It should be run as goroutine and stopped using Stop function
 func (fb *FizzBuzz) Run(port string) {
 	fb.srv = &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
@@ -57,6 +61,7 @@ func (fb *FizzBuzz) Run(port string) {
 	}
 }
 
+// Stop is used to stop the main program and its http server properly
 func (fb FizzBuzz) Stop() {
 	fb.log.Warn("stop signal catched, closing server")
 
@@ -71,6 +76,8 @@ func (fb FizzBuzz) Stop() {
 	fb.log.Info("server closed, exiting")
 }
 
+// initRoutes is used to init the base routes and attach them
+// to the router
 func initRoutes(fb *FizzBuzz, db database.Database) {
 	h := handlers{
 		log: fb.log,

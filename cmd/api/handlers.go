@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// handlers is the main struct for handling endpoints
 type handlers struct {
 	log logger.Logger
 	db  database.Database
